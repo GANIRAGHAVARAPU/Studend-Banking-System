@@ -1,4 +1,3 @@
-from datetime import datetime
 
 # ---------------- CUSTOMER CLASS ----------------
 class Customer:
@@ -139,3 +138,4 @@ class BankSystem:
 if __name__ == "__main__":
     bank = BankSystem()
     bank.menu()
+
