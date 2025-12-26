@@ -1,0 +1,141 @@
+from datetime import datetime
+
+# ---------------- CUSTOMER CLASS ----------------
+class Customer:
+    def __init__(self, name, customer_id):
+        self.name = name
+        self.customer_id = customer_id
+
+    def display_customer(self):
+        return f"Customer Name: {self.name}, ID: {self.customer_id}"
+
+
+# ---------------- BANK ACCOUNT CLASS ----------------
+class BankAccount:
+    def __init__(self, account_number, customer, balance=0):
+        self.account_number = account_number
+        self.customer = customer
+        self._balance = balance  # Encapsulation
+        self.transactions = []
+
+    def deposit(self, amount):
+        if amount > 0:
+            self._balance += amount
+            self.transactions.append(
+                f"{datetime.now()} - Deposited: ₹{amount}"
+            )
+            print("Deposit successful.")
+        else:
+            print("Invalid deposit amount.")
+
+    def withdraw(self, amount):
+        if amount <= self._balance:
+            self._balance -= amount
+            self.transactions.append(
+                f"{datetime.now()} - Withdrawn: ₹{amount}"
+            )
+            print("Withdrawal successful.")
+        else:
+            print("Insufficient balance.")
+
+    def check_balance(self):
+        return self._balance
+
+    def show_transactions(self):
+        if not self.transactions:
+            print("No transactions yet.")
+        else:
+            print("\nTransaction History:")
+            for t in self.transactions:
+                print(t)
+
+
+# ---------------- SAVINGS ACCOUNT (INHERITANCE) ----------------
+class SavingsAccount(BankAccount):
+    MIN_BALANCE = 500
+
+    def withdraw(self, amount):
+        if self._balance - amount >= self.MIN_BALANCE:
+            super().withdraw(amount)
+        else:
+            print("Minimum balance of ₹500 must be maintained.")
+
+
+# ---------------- BANK SYSTEM ----------------
+class BankSystem:
+    def __init__(self):
+        self.accounts = {}
+
+    def create_account(self):
+        name = input("Enter customer name: ")
+        customer_id = input("Enter customer ID: ")
+        acc_no = input("Enter account number: ")
+        balance = float(input("Enter initial deposit: "))
+
+        customer = Customer(name, customer_id)
+        account = SavingsAccount(acc_no, customer, balance)
+        self.accounts[acc_no] = account
+
+        print("Account created successfully.")
+
+    def get_account(self):
+        acc_no = input("Enter account number: ")
+        return self.accounts.get(acc_no)
+
+    def menu(self):
+        while True:
+            print("\n--- Simple Banking System ---")
+            print("1. Create Account")
+            print("2. Deposit")
+            print("3. Withdraw")
+            print("4. Check Balance")
+            print("5. Transaction History")
+            print("6. Exit")
+
+            choice = input("Choose an option: ")
+
+            if choice == "1":
+                self.create_account()
+
+            elif choice == "2":
+                account = self.get_account()
+                if account:
+                    amount = float(input("Enter deposit amount: "))
+                    account.deposit(amount)
+                else:
+                    print("Account not found.")
+
+            elif choice == "3":
+                account = self.get_account()
+                if account:
+                    amount = float(input("Enter withdrawal amount: "))
+                    account.withdraw(amount)
+                else:
+                    print("Account not found.")
+
+            elif choice == "4":
+                account = self.get_account()
+                if account:
+                    print(f"Current Balance: ₹{account.check_balance()}")
+                else:
+                    print("Account not found.")
+
+            elif choice == "5":
+                account = self.get_account()
+                if account:
+                    account.show_transactions()
+                else:
+                    print("Account not found.")
+
+            elif choice == "6":
+                print("Thank you for using the Banking System.")
+                break
+
+            else:
+                print("Invalid choice. Try again.")
+
+
+# ---------------- RUN PROGRAM ----------------
+if __name__ == "__main__":
+    bank = BankSystem()
+    bank.menu()
